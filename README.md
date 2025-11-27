@@ -1,4 +1,4 @@
-#Movie Recommendation System
+# Movie Recommendation System
 ===========================
 
 A simple Java-based movie recommendation engine built for software testing practice and file-based data handling without a database. It reads plain-text files that describe movies and users, validates them, and produces genre-based recommendations for each user.
