@@ -133,6 +133,13 @@ public class MovieRecommendationSystem {
                 likedMovies.add("");
             }
             else{
+                String[] checkLiked = moviesLine.trim().split("\\s+");
+
+                if (checkLiked.length > 1 && !moviesLine.contains(",")) {
+                    errors.add("ERROR: Liked Movie must be separated by a comma at line " + (i + 2));
+                    continue;
+                }
+
                 for (String movie : moviesLine.split(",")) {
                     likedMovies.add(movie.trim());
                 }

@@ -39,7 +39,19 @@ public class Validators {
 
         String expectedStart = title.replaceAll("[^A-Z]", "");
 
-        if (!movieId.startsWith(expectedStart)) return false;
+        int firstDigitIndex = -1;
+        for (int i = 0; i < movieId.length(); i++) {
+            if (Character.isDigit(movieId.charAt(i))) {
+                firstDigitIndex = i;
+                break;
+            }
+        }
+        
+        if (firstDigitIndex == -1) return false;
+
+        String lettersPart = movieId.substring(0, firstDigitIndex);
+
+        if (!lettersPart.equals(expectedStart)) return false;
         return true;
     }
 

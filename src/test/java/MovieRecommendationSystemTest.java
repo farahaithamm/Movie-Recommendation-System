@@ -808,6 +808,26 @@ class MovieRecommendationSystemTest {
         results = Files.readAllLines(Paths.get(recTestTXT));
         assertEquals(results, Arrays.asList("ERROR: Empty movie ID at line 3"));
 
+        // Missing , Between Genres
+        system = new MovieRecommendationSystem();
+        Files.write(Paths.get(movieTestTXT), Arrays.asList(
+            "The Dark Knight, TDK123",
+            "Action",
+            "Interstellar, I123",
+            "Sci-Fi Drama"
+        ));
+        Files.write(Paths.get(userTestTXT), Arrays.asList(
+            "Mona, 12345678X",
+            "TDK123"
+        ));
+
+        system.loadData(movieTestTXT, userTestTXT);
+        system.validateData();
+        system.createRecommendedMovies();
+        system.writeRecommendedMovies(recTestTXT);
+        results = Files.readAllLines(Paths.get(recTestTXT));
+        assertEquals(results, Arrays.asList("ERROR: Movie genres must be separated by a comma at line 4"));
+
         // =============== Users ===================
 
         // Missing User Name & Id Line
@@ -870,17 +890,17 @@ class MovieRecommendationSystemTest {
         results = Files.readAllLines(Paths.get(recTestTXT));
         assertEquals(results, Arrays.asList("ERROR: Incorrect user line format at line 1"));
 
-        // Missing , Between Genres
+        // Missing , Between Liked Movies
         system = new MovieRecommendationSystem();
         Files.write(Paths.get(movieTestTXT), Arrays.asList(
             "The Dark Knight, TDK123",
             "Action",
             "Interstellar, I123",
-            "Sci-Fi Drama"
+            "Sci-Fi, Drama"
         ));
         Files.write(Paths.get(userTestTXT), Arrays.asList(
             "Mona, 12345678X",
-            "TDK123"
+            "TDK123 I123"
         ));
 
         system.loadData(movieTestTXT, userTestTXT);
@@ -888,7 +908,7 @@ class MovieRecommendationSystemTest {
         system.createRecommendedMovies();
         system.writeRecommendedMovies(recTestTXT);
         results = Files.readAllLines(Paths.get(recTestTXT));
-        assertEquals(results, Arrays.asList("ERROR: Movie genres must be separated by a comma at line 4"));
+        assertEquals(results, Arrays.asList("ERROR: Liked Movie must be separated by a comma at line 2"));
 
         // Missing , Between User Name & Id
         system = new MovieRecommendationSystem();

@@ -116,7 +116,7 @@ class FileManagerTest {
 
     @Test
     void writeAndReadFileTest() throws IOException {
-        List<String> data = Arrays.asList("Line1", "Line2");
+        List<String> data = Arrays.asList(" Line1 ", "Line2");
         fileManager.writeFile(WRITE_TEST_FILE, data);
 
         List<String> result = Files.readAllLines(Paths.get(WRITE_TEST_FILE));

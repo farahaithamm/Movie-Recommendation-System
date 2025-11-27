@@ -153,6 +153,7 @@ public class ValidatorsTest {
     void validMovieTitleMultipleWordsTest() {
         assertTrue(Validators.validMovieTitle("The Matrix"));
         assertFalse(Validators.validMovieTitle("the Matrix"));
+        assertFalse(Validators.validMovieTitle("The matrix"));
         assertTrue(Validators.validMovieTitle("Fast And Furious"));
         assertTrue(Validators.validMovieTitle("The Matrix2"));
         assertTrue(Validators.validMovieTitle("Fast And Furious7"));
@@ -163,6 +164,8 @@ public class ValidatorsTest {
     void validMovieTitleWithSpecialCharactersTest() {
         assertFalse(Validators.validMovieTitle("The-Matrix"));
         assertFalse(Validators.validMovieTitle("The@Matrix"));
+        assertFalse(Validators.validMovieTitle("The M@trix"));
+        assertFalse(Validators.validMovieTitle("The_Matrix"));
     }
 
     // ========== validMovieId Tests ==========
@@ -190,6 +193,10 @@ public class ValidatorsTest {
         assertFalse(Validators.validMovieIdLetters(" TM123", "The Matrix"));
         assertTrue(Validators.validMovieIdUniqueNumbers(" TM123", "The Matrix"));
         assertFalse(Validators.validMovieId(" TM123", "The Matrix", existingMovieIds));
+
+        assertFalse(Validators.validMovieIdLetters("TM123 ", "The Matrix"));
+        assertFalse(Validators.validMovieIdUniqueNumbers("TM123 ", "The Matrix"));
+        assertFalse(Validators.validMovieId("TM123 ", "The Matrix", existingMovieIds));
     }
 
     @Test
@@ -201,6 +208,10 @@ public class ValidatorsTest {
         assertFalse(Validators.validMovieIdLetters("M123", "The Matrix"));
         assertTrue(Validators.validMovieIdUniqueNumbers("M123", "The Matrix"));
         assertFalse(Validators.validMovieId("M123", "The Matrix", existingMovieIds));
+
+        assertFalse(Validators.validMovieIdLetters("tm123", "The Matrix"));
+        assertTrue(Validators.validMovieIdUniqueNumbers("tm123", "The Matrix"));
+        assertFalse(Validators.validMovieId("tm123", "The Matrix", existingMovieIds));
     }
 
 
@@ -229,13 +240,17 @@ public class ValidatorsTest {
         assertFalse(Validators.validMovieIdUniqueNumbers("TM123#", "The Matrix"));
         assertFalse(Validators.validMovieId("TM123#", "The Matrix", existingMovieIds));
 
-        assertTrue(Validators.validMovieIdLetters("TMABC", "The Matrix"));
+        assertFalse(Validators.validMovieIdLetters("TMABC", "The Matrix"));
         assertFalse(Validators.validMovieIdUniqueNumbers("TMABC", "The Matrix"));
         assertFalse(Validators.validMovieId("TMABC", "The Matrix", existingMovieIds));
 
         assertFalse(Validators.validMovieIdLetters("TM#123", "The Matrix"));
         assertTrue(Validators.validMovieIdUniqueNumbers("TM#123", "The Matrix"));
         assertFalse(Validators.validMovieId("TM#123", "The Matrix", existingMovieIds));
+
+        assertFalse(Validators.validMovieIdLetters("TMA123", "The Matrix"));
+        assertTrue(Validators.validMovieIdUniqueNumbers("TMA123", "The Matrix"));
+        assertFalse(Validators.validMovieId("TMA123", "The Matrix", existingMovieIds));
     }
 
     @Test
