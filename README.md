@@ -1,10 +1,8 @@
 # Movie Recommendation System
-===========================
 
 A simple Java-based movie recommendation engine built for software testing practice and file-based data handling without a database. It reads plain-text files that describe movies and users, validates them, and produces genre-based recommendations for each user.
 
-Contents
---------
+## Contents
 
 - [Requirements](#requirements)
 - [Project Structure](#project-structure)
@@ -14,15 +12,13 @@ Contents
 - [Running Tests](#running-tests)
 - [Troubleshooting](#troubleshooting)
 
-Requirements
-------------
+## Requirements
 
 - JDK 8 or later
 - Maven 3.8+
 - Any shell (PowerShell, CMD, Bash)
 
-Project Structure
------------------
+## Project Structure
 
 ```
 src/
@@ -44,8 +40,7 @@ src/
       test*.txt                       # test fixtures
 ```
 
-Processing Flow
----------------
+## Processing Flow
 
 1. `loadData`: reads the movie and user files, mapping every two lines to a `Movie` or `User`.
 2. `validateData`: ensures names, IDs, and uniqueness rules are valid via `Validators`.
@@ -53,8 +48,7 @@ Processing Flow
 4. `writeRecommendedMovies`: writes either each user’s recommendations or the first detected error to `recommendations.txt`.
 5. `printMovies/printUsers`: logs data to the console for manual inspection.
 
-Data Formats
-------------
+## Data Formats
 
 - `movies.txt`
   ```
@@ -74,8 +68,7 @@ Data Formats
   Recommended Movie 1, Recommended Movie 2
   ```
 
-Running the App
----------------
+## Running the App
 
 1. Update `src/main/files/` with your own movie and user data.
 2. Run the application:
@@ -85,8 +78,7 @@ Running the App
    (or run `MovieRecommendationSystem.main` from your IDE).
 3. Check the console output and the updated `src/main/files/recommendations.txt`.
 
-Running Tests
--------------
+## Running Tests
 
 - Execute all JUnit tests:
   ```
@@ -94,8 +86,7 @@ Running Tests
   ```
 - Test reports (text + XML) live in `target/surefire-reports/`.
 
-Troubleshooting
----------------
+## Troubleshooting
 
 - **Missing files**: `main` aborts if `movies.txt` or `users.txt` can’t be found at the expected paths.
 - **Malformed input**: the first validation error is added to `errors` and written to `recommendations.txt`.
