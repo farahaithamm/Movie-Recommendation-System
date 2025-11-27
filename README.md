@@ -52,14 +52,14 @@ src/
 
 - `movies.txt`
   ```
-  MovieTitle, MOVID123
+  Movie Title, MT123
   Genre1, Genre2, Genre3
   ```
 
 - `users.txt`
   ```
   User Name, 123456789
-  MOVID123, MOVID456
+  MT123, MOVID456
   ```
 
 - `recommendations.txt` (output)
