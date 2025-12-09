@@ -200,7 +200,7 @@ public class ValidatorsTest {
     }
 
     @Test
-    void validMovieIdWrongCapitalLettersTest() {
+    void validMovieIdWrongLettersTest() {
         assertFalse(Validators.validMovieIdLetters("ABC123", "The Matrix"));
         assertTrue(Validators.validMovieIdUniqueNumbers("ABC123", "The Matrix"));
         assertFalse(Validators.validMovieId("ABC123", "The Matrix", existingMovieIds));
@@ -212,6 +212,10 @@ public class ValidatorsTest {
         assertFalse(Validators.validMovieIdLetters("tm123", "The Matrix"));
         assertTrue(Validators.validMovieIdUniqueNumbers("tm123", "The Matrix"));
         assertFalse(Validators.validMovieId("tm123", "The Matrix", existingMovieIds));
+
+        assertFalse(Validators.validMovieIdLetters("TMA123", "The Matrix"));
+        assertTrue(Validators.validMovieIdUniqueNumbers("TMA123", "The Matrix"));
+        assertFalse(Validators.validMovieId("TMA123", "The Matrix", existingMovieIds));
     }
 
 
@@ -247,21 +251,24 @@ public class ValidatorsTest {
         assertFalse(Validators.validMovieIdLetters("TM#123", "The Matrix"));
         assertTrue(Validators.validMovieIdUniqueNumbers("TM#123", "The Matrix"));
         assertFalse(Validators.validMovieId("TM#123", "The Matrix", existingMovieIds));
-
-        assertFalse(Validators.validMovieIdLetters("TMA123", "The Matrix"));
-        assertTrue(Validators.validMovieIdUniqueNumbers("TMA123", "The Matrix"));
-        assertFalse(Validators.validMovieId("TMA123", "The Matrix", existingMovieIds));
     }
 
     @Test
     void validMovieIdNonUniqueDigitsTest() {
         assertTrue(Validators.validMovieIdLetters("TM112", "The Matrix"));
-        assertFalse(Validators.validMovieIdUniqueNumbers("TM112", "The Matrix"));
-        assertFalse(Validators.validMovieId("TM112", "The Matrix", existingMovieIds));
+        assertTrue(Validators.validMovieIdUniqueNumbers("TM112", "The Matrix"));
+        assertTrue(Validators.validMovieId("TM112", "The Matrix", existingMovieIds));
 
         assertTrue(Validators.validMovieIdLetters("TM222", "The Matrix"));
-        assertFalse(Validators.validMovieIdUniqueNumbers("TM222", "The Matrix"));
-        assertFalse(Validators.validMovieId("TM222", "The Matrix", existingMovieIds)); 
+        assertTrue(Validators.validMovieIdUniqueNumbers("TM222", "The Matrix"));
+        assertTrue(Validators.validMovieId("TM222", "The Matrix", existingMovieIds)); 
+    }
+
+    @Test
+    void validMovieIdDuplicateDigitsInOtherIdTest() {
+        assertTrue(Validators.validMovieIdLetters("TM145", "The Matrix"));
+        assertTrue(Validators.validMovieIdUniqueNumbers("TM145", "The Matrix"));
+        assertFalse(Validators.validMovieId("TM145", "The Matrix", existingMovieIds));
     }
 
     @Test
