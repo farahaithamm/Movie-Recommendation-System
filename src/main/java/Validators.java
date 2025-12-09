@@ -54,8 +54,7 @@ public class Validators {
         if (!lettersPart.equals(expectedStart)) return false;
         return true;
     }
-
-    public static boolean validMovieIdUniqueNumbers(String movieId, String title){
+public static boolean validMovieIdUniqueNumbers(String movieId, String title){
         if (movieId == null || movieId.trim().isEmpty()) return false;
 
         int firstDigitIndex = -1;
@@ -70,13 +69,7 @@ public class Validators {
         
         String digits = movieId.substring(firstDigitIndex);
         if (!digits.matches("\\d{3}")) return false;
-
-        Set<Character> digitSet = new HashSet<>();
-        for (char c : digits.toCharArray()) {
-            digitSet.add(c);
-        }
-
-        if (digitSet.size() != 3) return false;
+        
         return true;
     }
 
@@ -84,6 +77,19 @@ public class Validators {
         boolean trueLetters = validMovieIdLetters(movieId, title);
         boolean trueNumbers = validMovieIdUniqueNumbers(movieId, title);
 
-        return trueLetters && trueNumbers &&(!MoviesIds.contains(movieId));
+        if (!trueLetters || !trueNumbers) return false;
+        if (MoviesIds.contains(movieId)) return false;
+
+        String currentDigits = movieId.substring(movieId.length() - 3);
+
+        for (String existingId : MoviesIds) {
+            String existingDigits = existingId.substring(existingId.length() - 3);
+            if (existingDigits.equals(currentDigits)) {
+                return false;
+            }
+        }
+
+        return true;
     }
+}
 }
