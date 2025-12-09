@@ -54,7 +54,7 @@ public class Validators {
         if (!lettersPart.equals(expectedStart)) return false;
         return true;
     }
-public static boolean validMovieIdUniqueNumbers(String movieId, String title){
+    public static boolean validMovieIdUniqueNumbers(String movieId, String title){
         if (movieId == null || movieId.trim().isEmpty()) return false;
 
         int firstDigitIndex = -1;
