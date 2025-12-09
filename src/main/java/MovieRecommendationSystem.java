@@ -38,6 +38,17 @@ public class MovieRecommendationSystem {
     }
 
     public void loadMovies(String moviesTXT) {
+        if (moviesTXT == null || moviesTXT.trim().isEmpty()) {
+            errors.add("ERROR: Invalid movie file path");
+            return;
+        }
+        
+        File movieFile = new File(moviesTXT);
+        if (!movieFile.exists()) {
+            errors.add("ERROR: Movie file does not exist at " + moviesTXT);
+            return;
+        }
+        
         List<String> movieLines = fileManager.readFile(moviesTXT);
         this.movies.clear();
         for (int i = 0; i < movieLines.size(); i += 2) {
@@ -92,6 +103,17 @@ public class MovieRecommendationSystem {
     }
     
     public void loadUsers(String usersTXT) {
+        if (usersTXT == null || usersTXT.trim().isEmpty()) {
+            errors.add("ERROR: Invalid user file path");
+            return;
+        }
+        
+        File userFile = new File(usersTXT);
+        if (!userFile.exists()) {
+            errors.add("ERROR: User file does not exist at " + usersTXT);
+            return;
+        }
+        
         List<String> userLines = fileManager.readFile(usersTXT);
         this.users.clear();
         for (int i = 0; i < userLines.size(); i += 2) {
@@ -175,7 +197,7 @@ public class MovieRecommendationSystem {
             }
 
             if(!Validators.validMovieId(movie.getMovieId(), movie.getMovieTitle(), moviesUnique)){
-                errors.add("ERROR: Movie Id " + movie.getMovieId() + " is duplicated");
+                errors.add("ERROR: Movie Id numbers " + movie.getMovieId() + " are not unique");
                 return;
             }
             moviesUnique.add(movie.getMovieId());
@@ -319,14 +341,13 @@ public class MovieRecommendationSystem {
         recSystem.loadData(moviesTXT, usersTXT);
         recSystem.validateData();
         recSystem.createRecommendedMovies();
+        recSystem.writeRecommendedMovies(recTXT);
 
-        if (!recSystem.errors.isEmpty()) {
+        if (!recSystem.getErrors().isEmpty()) {
             System.out.println(recSystem.errors.get(0));
-            recSystem.writeRecommendedMovies(recTXT);
             return;
         }
 
-        recSystem.writeRecommendedMovies(recTXT);
         recSystem.printMovies();
         System.out.println("=================================================");
         recSystem.printUsers();
