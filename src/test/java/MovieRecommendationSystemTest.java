@@ -107,7 +107,7 @@ class MovieRecommendationSystemTest {
     }
 
     @Test
-    void testLoadDataWithValidInputs() throws IOException {
+    void loadDataWithValidInputsTest() throws IOException {
         List<String> moviesData = Arrays.asList(
             "The Matrix, TM201",
             "Action, Sci-Fi",
@@ -127,9 +127,8 @@ class MovieRecommendationSystemTest {
         assertEquals(1, system.getUsers().size());
     }
 
-
     @Test
-    void testValidateData() throws IOException {
+    void validateDataTest() throws IOException {
         // User likes all movies
         Files.write(Paths.get(movieTestTXT), Arrays.asList(
             "Inception, I123",
@@ -221,8 +220,26 @@ class MovieRecommendationSystemTest {
         // Invalid Movie Id
         system = new MovieRecommendationSystem();
         Files.write(Paths.get(movieTestTXT), Arrays.asList(
-            "Inception, I223",
+            "Inception, I12",
             "Sci-Fi, Thriller"
+        ));
+        Files.write(Paths.get(userTestTXT), Arrays.asList(
+            "Ahmed Hassan, 111111111",
+            "I12"
+        ));
+        system.loadData(movieTestTXT, userTestTXT);
+        system.validateData();
+        system.createRecommendedMovies();
+        assertTrue(system.getUsers().get(0).getRecommendedMoviesTitles().isEmpty());
+
+
+        // Duplicate digits in different movie IDs
+        system = new MovieRecommendationSystem();
+        Files.write(Paths.get(movieTestTXT), Arrays.asList(
+            "Inception, I123",
+            "Sci-Fi, Thriller",
+            "The Matrix, TM123",
+            "Action, Sci-Fi"
         ));
         Files.write(Paths.get(userTestTXT), Arrays.asList(
             "Ahmed Hassan, 111111111",
@@ -434,21 +451,21 @@ class MovieRecommendationSystemTest {
         // Invalid Movie Id Number
         system = new MovieRecommendationSystem();
         Files.write(Paths.get(movieTestTXT), Arrays.asList(
-            "Inception, I223",
+            "Inception, I12",
             "Sci-Fi, Thriller",
             "The Matrix, TM456",
             "Action, Sci-Fi"
         ));
         Files.write(Paths.get(userTestTXT), Arrays.asList(
             "Ahmed Hassan, 111111111",
-            "I123"
+            "I12"
         ));
         system.loadData(movieTestTXT, userTestTXT);
         system.validateData();
         system.createRecommendedMovies();
         system.writeRecommendedMovies(recTestTXT);
         results = Files.readAllLines(Paths.get(recTestTXT));
-        assertEquals(results, Arrays.asList("ERROR: Movie Id numbers I223 are wrong"));
+        assertEquals(results, Arrays.asList("ERROR: Movie Id numbers I12 are wrong"));
 
         // Duplicate movie IDs
         system = new MovieRecommendationSystem();
@@ -467,7 +484,26 @@ class MovieRecommendationSystemTest {
         system.createRecommendedMovies();
         system.writeRecommendedMovies(recTestTXT);
         results = Files.readAllLines(Paths.get(recTestTXT));
-        assertEquals(results, Arrays.asList("ERROR: Movie Id I123 is duplicated"));
+        assertEquals(results, Arrays.asList("ERROR: Movie Id numbers I123 are not unique"));
+
+        // Duplicate digits in different movie IDs
+        system = new MovieRecommendationSystem();
+        Files.write(Paths.get(movieTestTXT), Arrays.asList(
+            "Inception, I123",
+            "Sci-Fi, Thriller",
+            "The Matrix, TM123",
+            "Action, Sci-Fi"
+        ));
+        Files.write(Paths.get(userTestTXT), Arrays.asList(
+            "Ahmed Hassan, 111111111",
+            "I123"
+        ));
+        system.loadData(movieTestTXT, userTestTXT);
+        system.validateData();
+        system.createRecommendedMovies();
+        system.writeRecommendedMovies(recTestTXT);
+        results = Files.readAllLines(Paths.get(recTestTXT));
+        assertEquals(results, Arrays.asList("ERROR: Movie Id numbers TM123 are not unique"));
 
         // Duplicate user IDs
         system = new MovieRecommendationSystem();
@@ -559,14 +595,14 @@ class MovieRecommendationSystemTest {
         // Invalid Movie Title & Movie Id
         system = new MovieRecommendationSystem();
         Files.write(Paths.get(movieTestTXT), Arrays.asList(
-            "inception, I223",
+            "inception, I23",
             "Sci-Fi, Thriller",
             "The Matrix, TM456",
             "Action, Sci-Fi"
         ));
         Files.write(Paths.get(userTestTXT), Arrays.asList(
             "Ahmed Hassan, 111111111",
-            "I123"
+            "TM123"
         ));
         system.loadData(movieTestTXT, userTestTXT);
         system.validateData();
@@ -580,7 +616,7 @@ class MovieRecommendationSystemTest {
         Files.write(Paths.get(movieTestTXT), Arrays.asList(
             "Inception, I123",
             "Sci-Fi, Thriller",
-            "The Matrix, M446",
+            "The Matrix, M13",
             "Action, Sci-Fi"
         ));
         Files.write(Paths.get(userTestTXT), Arrays.asList(
@@ -592,14 +628,14 @@ class MovieRecommendationSystemTest {
         system.createRecommendedMovies();
         system.writeRecommendedMovies(recTestTXT);
         results = Files.readAllLines(Paths.get(recTestTXT));
-        assertEquals(results, Arrays.asList("ERROR: Movie Id letters M446 are wrong"));
+        assertEquals(results, Arrays.asList("ERROR: Movie Id letters M13 are wrong"));
 
-        // Invalid Movie Id Number & Duplicated Movie Id
+        // Invalid Movie Id Number & Duplicate Movie Id Numbers
         system = new MovieRecommendationSystem();
         Files.write(Paths.get(movieTestTXT), Arrays.asList(
-            "Inception, I223",
+            "Inception, I123",
             "Sci-Fi, Thriller",
-            "Interstellar, I223",
+            "The Matrix, TM123",
             "Action, Thriller"
         ));
         Files.write(Paths.get(userTestTXT), Arrays.asList(
@@ -611,7 +647,7 @@ class MovieRecommendationSystemTest {
         system.createRecommendedMovies();
         system.writeRecommendedMovies(recTestTXT);
         results = Files.readAllLines(Paths.get(recTestTXT));
-        assertEquals(results, Arrays.asList("ERROR: Movie Id numbers I223 are wrong"));
+        assertEquals(results, Arrays.asList("ERROR: Movie Id numbers TM123 are not unique"));
 
         // Duplicate movie IDs & Users IDs
         system = new MovieRecommendationSystem();
@@ -632,7 +668,7 @@ class MovieRecommendationSystemTest {
         system.createRecommendedMovies();
         system.writeRecommendedMovies(recTestTXT);
         results = Files.readAllLines(Paths.get(recTestTXT));
-        assertEquals(results, Arrays.asList("ERROR: Movie Id I123 is duplicated"));
+        assertEquals(results, Arrays.asList("ERROR: Movie Id numbers I123 are not unique"));
     }
 
     @Test
