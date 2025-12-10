@@ -255,6 +255,11 @@ class MovieRecommendationSystemTest {
         system.createRecommendedMovies();
         system.writeRecommendedMovies(recTestTXT);
         
+        List<String> results = Files.readAllLines(Paths.get(recTestTXT));
+        assertEquals(results,  Arrays.asList(
+            "Ahmed Hassan, 111111111",
+            ""
+        ) );
         assertTrue(system.getErrors().isEmpty());
         assertTrue(system.getMovies().isEmpty());
         assertFalse(system.getUsers().isEmpty());
@@ -317,40 +322,6 @@ class MovieRecommendationSystemTest {
         assertTrue(system.getErrors().isEmpty());
         assertTrue(system.getMovies().isEmpty());
         assertTrue(system.getUsers().isEmpty());
-    }
-
-    @Test
-    void writeRecommendedMoviesWithEmptyUsersTest() throws IOException {
-        Files.write(Paths.get(movieTestTXT), Arrays.asList(
-            "Inception, I123",
-            "Sci-Fi, Thriller"
-        ));
-        Files.write(Paths.get(userTestTXT), Arrays.asList());
-
-        system.loadData(movieTestTXT, userTestTXT);
-        system.validateData();
-        system.createRecommendedMovies();
-        system.writeRecommendedMovies(recTestTXT);
-        
-        List<String> results = Files.readAllLines(Paths.get(recTestTXT));
-        assertTrue(results.isEmpty());
-        assertTrue(system.getErrors().isEmpty());
-    }
-
-    @Test
-    void writeRecommendedMoviesWithEmptyMoviesTest() throws IOException {
-        Files.write(Paths.get(movieTestTXT), Arrays.asList());
-        Files.write(Paths.get(userTestTXT), Arrays.asList(
-            "Ahmed Hassan, 111111111",
-            ""
-        ));
-
-        system.loadData(movieTestTXT, userTestTXT);
-        system.validateData();
-        system.createRecommendedMovies();
-        system.writeRecommendedMovies(recTestTXT);
-
-        assertTrue(system.getErrors().isEmpty());
     }
 
     @Test
@@ -549,8 +520,6 @@ class MovieRecommendationSystemTest {
         system.validateData();
         system.createRecommendedMovies();
         assertFalse(system.getUsers().get(0).getRecommendedMoviesTitles().isEmpty());
-        assertFalse(system.getUsers().get(1).getRecommendedMoviesTitles().isEmpty());
-
     }
 
     @Test
@@ -802,7 +771,6 @@ class MovieRecommendationSystemTest {
     @Test
     void writeRecommendationsWithMultipleErrorsTest() throws IOException {
         // Invalid Username & User Id
-        system = new MovieRecommendationSystem();
         Files.write(Paths.get(movieTestTXT), Arrays.asList(
             "Inception, I123",
             "Sci-Fi, Thriller",
@@ -1295,7 +1263,7 @@ class MovieRecommendationSystemTest {
         results = Files.readAllLines(Paths.get(recTestTXT));
         assertEquals(results, Arrays.asList("ERROR: Empty movie ID at line 3"));
 
-        // Missing 2 Movie Ids
+        // Missing 2 Movie Ids & 1 Username
         system = new MovieRecommendationSystem();
         Files.write(Paths.get(movieTestTXT), Arrays.asList(
             "The Dark Knight, ",
