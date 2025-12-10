@@ -27,6 +27,120 @@ class MovieRecommendationSystemTest {
     }
 
     @Test
+    void loadMoviesWithNullPathTest() {
+        system.loadMovies(null);
+        
+        assertTrue(system.getErrors().get(0).contains("Invalid movie file path"));
+        assertTrue(system.getMovies().isEmpty());
+    }
+
+    @Test
+    void loadMoviesWithEmptyPathTest() {
+        system.loadMovies("");
+        
+        assertTrue(system.getErrors().get(0).contains("Invalid movie file path"));
+        assertTrue(system.getMovies().isEmpty());
+    }
+
+    @Test
+    void loadMoviesWithWhitespacePathTest() {
+        system.loadMovies("   ");
+        
+        assertTrue(system.getErrors().get(0).contains("Invalid movie file path"));
+        assertTrue(system.getMovies().isEmpty());
+    }
+
+    @Test
+    void loadMoviesWithNonExistentFileTest() {
+        system.loadMovies("non_existent_file.txt");
+        
+        assertTrue(system.getErrors().get(0).contains("Movie file does not exist"));
+        assertTrue(system.getMovies().isEmpty());
+    }
+
+    @Test
+    void loadUsersWithNullPathTest() {
+        system.loadUsers(null);
+        
+        assertTrue(system.getErrors().get(0).contains("Invalid user file path"));
+        assertTrue(system.getUsers().isEmpty());
+    }
+
+    @Test
+    void loadUsersWithEmptyPathTest() {
+        system.loadUsers("");
+        
+        assertTrue(system.getErrors().get(0).contains("Invalid user file path"));
+        assertTrue(system.getUsers().isEmpty());
+    }
+
+    @Test
+    void loadUsersWithWhitespacePathTest() {
+        system.loadUsers("   ");
+        
+        assertTrue(system.getErrors().get(0).contains("Invalid user file path"));
+        assertTrue(system.getUsers().isEmpty());
+    }
+
+    @Test
+    void loadUsersWithNonExistentFileTest() {
+        system.loadUsers("non_existent_file.txt");
+        
+        assertTrue(system.getErrors().get(0).contains("User file does not exist"));
+        assertTrue(system.getUsers().isEmpty());
+    }
+
+    @Test
+    void loadDataWithInvalidPathsTest() {
+        system.loadData("invalid_movies.txt", "invalid_users.txt");
+        
+        assertTrue(system.getErrors().get(0).contains("Movie file does not exist"));
+        assertTrue(system.getMovies().isEmpty());
+        assertTrue(system.getUsers().isEmpty());
+    }
+
+    @Test
+    void loadDataWithNullPathsTest() {
+        system.loadData(null, null);
+        
+        assertTrue(system.getErrors().get(0).contains("Invalid movie file path"));
+        assertTrue(system.getMovies().isEmpty());
+        assertTrue(system.getUsers().isEmpty());
+    }
+
+    @Test
+    void loadDataWithInvalidMoviePathOnlyTest() throws IOException {
+        List<String> usersData = Arrays.asList(
+            "Alice, 12345678X",
+            "TM201"
+        );
+
+        Files.write(Paths.get(userTestTXT), usersData);
+        system.loadData("invalid_movies.txt", userTestTXT);
+        
+        assertTrue(system.getErrors().get(0).contains("Movie file does not exist"));
+        assertTrue(system.getMovies().isEmpty());
+        assertFalse(system.getUsers().isEmpty());
+    }
+
+    @Test
+    void loadDataWithInvalidUserPathOnlyTest() throws IOException {
+        List<String> moviesData = Arrays.asList(
+            "The Matrix, TM201",
+            "Action, Sci-Fi",
+            "Titanic, T102",
+            "Romance, Drama"
+        );
+        Files.write(Paths.get(movieTestTXT), moviesData);
+
+        system.loadData(movieTestTXT, "invalid_users.txt");
+        
+        assertTrue(system.getErrors().get(0).contains("User file does not exist"));
+        assertFalse(system.getMovies().isEmpty());
+        assertTrue(system.getUsers().isEmpty());
+    }
+
+    @Test
     void loadMoviesWithMissingLinesTest() throws IOException {
         List<String> moviesData = Arrays.asList("Movie1, M001");
         Files.write(Paths.get(movieTestTXT), moviesData);
@@ -104,6 +218,139 @@ class MovieRecommendationSystemTest {
         system.loadUsers(userTestTXT);
 
         assertEquals(1, system.getUsers().size());
+    }
+
+    @Test
+    void createRecommendedMoviesWithEmptyUsersTest() throws IOException {
+        Files.write(Paths.get(movieTestTXT), Arrays.asList(
+            "Inception, I123",
+            "Sci-Fi, Thriller",
+            "The Matrix, TM456",
+            "Action, Sci-Fi"
+        ));
+        Files.write(Paths.get(userTestTXT), Arrays.asList());
+
+        system.loadData(movieTestTXT, userTestTXT);
+        system.validateData();
+        system.createRecommendedMovies();
+        system.writeRecommendedMovies(recTestTXT);
+        
+        List<String> results = Files.readAllLines(Paths.get(recTestTXT));
+        assertTrue(results.isEmpty());
+        assertTrue(system.getErrors().isEmpty());
+        assertFalse(system.getMovies().isEmpty());
+        assertTrue(system.getUsers().isEmpty());
+    }
+
+    @Test
+    void createRecommendedMoviesWithEmptyMoviesTest() throws IOException {
+        Files.write(Paths.get(movieTestTXT), Arrays.asList());
+        Files.write(Paths.get(userTestTXT), Arrays.asList(
+            "Ahmed Hassan, 111111111",
+            ""
+        ));
+
+        system.loadData(movieTestTXT, userTestTXT);
+        system.validateData();
+        system.createRecommendedMovies();
+        system.writeRecommendedMovies(recTestTXT);
+        
+        assertTrue(system.getErrors().isEmpty());
+        assertTrue(system.getMovies().isEmpty());
+        assertFalse(system.getUsers().isEmpty());
+    }
+
+    @Test
+    void createRecommendedMoviesWithEmptyUsersAndMoviesTest() throws IOException {
+        Files.write(Paths.get(movieTestTXT), Arrays.asList());
+        Files.write(Paths.get(userTestTXT), Arrays.asList());
+
+        system.loadData(movieTestTXT, userTestTXT);
+        system.validateData();
+        system.createRecommendedMovies();
+        system.writeRecommendedMovies(recTestTXT);
+        
+        List<String> results = Files.readAllLines(Paths.get(recTestTXT));
+        assertTrue(results.isEmpty());
+        assertTrue(system.getErrors().isEmpty());
+        assertTrue(system.getMovies().isEmpty());
+        assertTrue(system.getUsers().isEmpty());
+    }
+
+    @Test
+    void createRecommendedMoviesWithEmptyUsersInMemoryTest() {
+        Movie movie1 = new Movie("Inception", "I123", Arrays.asList("Sci-Fi", "Thriller"));
+        Movie movie2 = new Movie("The Matrix", "TM456", Arrays.asList("Action", "Sci-Fi"));
+
+        system.setMovies(Arrays.asList(movie1, movie2));
+        system.setUsers(Arrays.asList());
+        
+        system.createRecommendedMovies();
+        
+        assertTrue(system.getErrors().isEmpty());
+        assertFalse(system.getMovies().isEmpty());
+        assertTrue(system.getUsers().isEmpty());
+    }
+
+    @Test
+    void createRecommendedMoviesWithEmptyMoviesInMemoryTest() {
+        User user1 = new User("Ahmed Hassan", "111111111", Arrays.asList(""));
+        
+        system.setMovies(Arrays.asList());
+        system.setUsers(Arrays.asList(user1));
+        
+        system.createRecommendedMovies();
+        
+        assertTrue(system.getErrors().isEmpty());
+        assertTrue(system.getMovies().isEmpty());
+        assertFalse(system.getUsers().isEmpty());
+        assertTrue(user1.getRecommendedMoviesTitles().isEmpty());
+    }
+
+    @Test
+    void createRecommendedMoviesWithEmptyUsersAndMoviesInMemoryTest() {
+        system.setMovies(Arrays.asList());
+        system.setUsers(Arrays.asList());
+        
+        system.createRecommendedMovies();
+        
+        assertTrue(system.getErrors().isEmpty());
+        assertTrue(system.getMovies().isEmpty());
+        assertTrue(system.getUsers().isEmpty());
+    }
+
+    @Test
+    void writeRecommendedMoviesWithEmptyUsersTest() throws IOException {
+        Files.write(Paths.get(movieTestTXT), Arrays.asList(
+            "Inception, I123",
+            "Sci-Fi, Thriller"
+        ));
+        Files.write(Paths.get(userTestTXT), Arrays.asList());
+
+        system.loadData(movieTestTXT, userTestTXT);
+        system.validateData();
+        system.createRecommendedMovies();
+        system.writeRecommendedMovies(recTestTXT);
+        
+        List<String> results = Files.readAllLines(Paths.get(recTestTXT));
+        assertTrue(results.isEmpty());
+        assertTrue(system.getErrors().isEmpty());
+    }
+
+    @Test
+    void writeRecommendedMoviesWithEmptyMoviesTest() throws IOException {
+        Files.write(Paths.get(movieTestTXT), Arrays.asList());
+        Files.write(Paths.get(userTestTXT), Arrays.asList(
+            "Ahmed Hassan, 111111111",
+            ""
+        ));
+
+        system.loadData(movieTestTXT, userTestTXT);
+        system.validateData();
+        system.createRecommendedMovies();
+        system.writeRecommendedMovies(recTestTXT);
+
+        assertTrue(system.getErrors().isEmpty());
     }
 
     @Test
